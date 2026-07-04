@@ -1,6 +1,19 @@
 import * as bcrypt from 'bcryptjs';
+import { config } from 'dotenv';
+import { resolve } from 'path';
 import { Pool } from 'pg';
 import { UserRole } from '@suv/shared';
+
+config({ path: resolve(__dirname, '../../../../.env') });
+
+function poolConfig(connectionString: string) {
+  const needsSsl =
+    /neon\.tech|supabase\.co|sslmode=require/i.test(connectionString);
+  return {
+    connectionString,
+    ssl: needsSsl ? { rejectUnauthorized: false } : undefined,
+  };
+}
 
 /** Approximate district polygons around Samarkand (simplified for MVP demo). */
 const DISTRICTS = [
@@ -78,7 +91,7 @@ async function seed() {
   const databaseUrl =
     process.env.DATABASE_URL ??
     'postgresql://suv:suv_secret@localhost:5433/suv_shaxar';
-  const pool = new Pool({ connectionString: databaseUrl });
+  const pool = new Pool(poolConfig(databaseUrl));
 
   console.log('Seeding database...');
 

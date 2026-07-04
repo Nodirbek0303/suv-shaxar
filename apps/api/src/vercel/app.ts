@@ -479,7 +479,7 @@ export async function createVercelApp(): Promise<Express> {
          FROM irrigation_lines l JOIN regions r ON r.id = l.region_id
          ORDER BY l.code`,
       );
-      const result = [];
+      const result: Record<string, unknown>[] = [];
       for (const l of lines) {
         const sensors = await many<any>(
           `SELECT s.type, s.last_seen_at,
