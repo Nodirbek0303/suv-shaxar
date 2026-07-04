@@ -1,0 +1,30 @@
+{
+  "name": "suv-shaxar",
+  "private": true,
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "dev": "concurrently -n portal,api,operator,monitoring,simulator -c cyan,blue,green,magenta,yellow \"npm run dev:portal\" \"npm run dev:api\" \"npm run dev:operator\" \"npm run dev:monitoring\" \"npm run dev:simulator\"",
+    "dev:portal": "npm run dev -w @suv/portal",
+    "dev:api": "npm run dev -w @suv/api",
+    "dev:operator": "npm run dev -w @suv/operator",
+    "dev:monitoring": "npm run dev -w @suv/monitoring",
+    "dev:simulator": "npm run dev -w @suv/simulator",
+    "build": "turbo run build",
+    "lint": "turbo run lint",
+    "db:migrate": "npm run db:migrate -w @suv/api",
+    "db:seed": "npm run db:seed -w @suv/api",
+    "setup": "docker compose up -d && npm run build -w @suv/shared && npm run db:migrate && npm run db:seed"
+  },
+  "devDependencies": {
+    "concurrently": "^10.0.3",
+    "turbo": "^2.3.3",
+    "typescript": "^5.7.2"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "packageManager": "npm@10.9.0"
+}
