@@ -1,12 +1,12 @@
 {
   "version": 2,
   "installCommand": "cd ../.. && npm install",
-  "buildCommand": "cd ../.. && npm run build -w @suv/shared && npm run build -w @suv/api",
+  "buildCommand": "cd ../.. && npm install",
   "functions": {
     "api/index.ts": {
       "memory": 1024,
-      "maxDuration": 30,
-      "includeFiles": "dist/**"
+      "maxDuration": 60,
+      "includeFiles": "src/vercel/**"
     }
   },
   "rewrites": [{ "source": "/(.*)", "destination": "/api" }]
