@@ -31,9 +31,16 @@ const texts = {
   },
 };
 
-const OBODON_URL = import.meta.env.VITE_OBODON_URL ?? 'http://localhost:5173/login';
+const OBODON_URL =
+  import.meta.env.VITE_OBODON_URL ??
+  (import.meta.env.PROD
+    ? 'https://suv-shaxar-obodon.vercel.app/login'
+    : 'http://localhost:5173/login');
 const HOKIMIYAT_URL =
-  import.meta.env.VITE_HOKIMIYAT_URL ?? 'http://localhost:5174/login';
+  import.meta.env.VITE_HOKIMIYAT_URL ??
+  (import.meta.env.PROD
+    ? 'https://suv-shaxar-hokimiyat.vercel.app/login'
+    : 'http://localhost:5174/login');
 
 export default function App() {
   const [lang, setLang] = useState<'uz' | 'ru'>('uz');

@@ -49,6 +49,14 @@ export async function createVercelApp(): Promise<Express> {
     next();
   });
 
+  app.get('/', (_req, res) => {
+    res.json({
+      name: 'SUV-SHAXAR API',
+      status: 'ok',
+      health: '/api/health',
+    });
+  });
+
   app.get(
     '/api/health',
     asyncHandler(async (_req, res) => {
