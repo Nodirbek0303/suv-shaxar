@@ -4,6 +4,7 @@ import { ScheduleModule } from '@nestjs/schedule';
 import { AggregationModule } from './aggregation/aggregation.module';
 import { AuthModule } from './auth/auth.module';
 import { DatabaseModule } from './database/database.module';
+import { HealthController } from './health.controller';
 import { LinesModule } from './lines/lines.module';
 import { MonitoringModule } from './monitoring/monitoring.module';
 import { MqttModule } from './mqtt/mqtt.module';
@@ -15,13 +16,18 @@ import { StorageModule } from './storage/storage.module';
 import { TicketsModule } from './tickets/tickets.module';
 import { UsersModule } from './users/users.module';
 
+const isServerless = !!(
+  process.env.VERCEL ||
+  process.env.DISABLE_BACKGROUND_SERVICES === 'true'
+);
+
 @Module({
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
       envFilePath: ['.env', '../../.env'],
     }),
-    ScheduleModule.forRoot(),
+    ...(isServerless ? [] : [ScheduleModule.forRoot()]),
     DatabaseModule,
     AuthModule,
     RegionsModule,
@@ -32,9 +38,10 @@ import { UsersModule } from './users/users.module';
     ReportsModule,
     UsersModule,
     StorageModule,
-    RealtimeModule,
-    MqttModule,
-    AggregationModule,
+    ...(isServerless
+      ? []
+      : [RealtimeModule, MqttModule, AggregationModule]),
   ],
+  controllers: [HealthController],
 })
 export class AppModule {}

@@ -38,7 +38,12 @@ export default function DashboardPage() {
       .catch((e) => setError(e.message))
       .finally(() => setLoading(false));
 
-    const socket = io('http://localhost:3000/realtime', {
+    const socketUrl =
+      import.meta.env.VITE_WS_URL ??
+      (import.meta.env.PROD ? '' : 'http://localhost:3000');
+    if (!socketUrl) return;
+
+    const socket = io(`${socketUrl}/realtime`, {
       transports: ['websocket'],
     });
     socket.on('sensor:reading', (payload: LiveReading) => {

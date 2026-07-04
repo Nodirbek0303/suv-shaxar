@@ -1,19 +1,27 @@
 import { ValidationPipe } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { NestFactory } from '@nestjs/core';
+import { ExpressAdapter } from '@nestjs/platform-express';
+import express, { type Express } from 'express';
 import { AppModule } from './app.module';
 
-async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
-  const config = app.get(ConfigService);
+export async function createNestServer(): Promise<Express> {
+  const expressApp = express();
+  const app = await NestFactory.create(
+    AppModule,
+    new ExpressAdapter(expressApp),
+    { logger: ['error', 'warn', 'log'] },
+  );
 
+  const config = app.get(ConfigService);
   const origins = config
     .get<string>(
       'CORS_ORIGINS',
-      'http://localhost:5170,http://localhost:5173,http://localhost:5174',
+      'http://localhost:5170,http://localhost:5173,http://localhost:5174,https://*.vercel.app',
     )
     .split(',')
-    .map((o) => o.trim());
+    .map((o) => o.trim())
+    .filter(Boolean);
 
   app.enableCors({
     origin: (
@@ -24,7 +32,8 @@ async function bootstrap() {
       const allowed =
         origins.includes(origin) ||
         origins.includes('*') ||
-        /\.vercel\.app$/.test(origin);
+        /\.vercel\.app$/.test(origin) ||
+        origins.some((o) => o.includes('*.vercel.app'));
       callback(null, allowed);
     },
     credentials: true,
@@ -39,9 +48,6 @@ async function bootstrap() {
     }),
   );
 
-  const port = Number(config.get<string>('API_PORT', '3000'));
-  await app.listen(port);
-  console.log(`API running on http://localhost:${port}/api`);
+  await app.init();
+  return expressApp;
 }
-
-bootstrap();
